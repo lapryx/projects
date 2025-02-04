@@ -20,25 +20,25 @@ headers = {
 current_session = session(
 )
 
-current_session.auth=(username, getpass())
+#current_session.auth=(username, getpass())
 
-sessionID = current_session.post(url+"session")
+#sessionID = current_session.post(url+"session")
 
 
-headers = {
-        "vmware-api-session-id": json.loads(sessionID.text)
-        }
+#headers = {
+#        "vmware-api-session-id": json.loads(sessionID.text)
+#        }
 
-current_session.headers.update(headers)
+#current_session.headers.update(headers)
 
-response = current_session.get(url+"vcenter/vm")
+#response = current_session.get(url+"vcenter/vm")
 
-r_json = json.loads(response.text)
+#r_json = json.loads(response.text)
 
-vcenter_hosts = []
+#vcenter_hosts = []
 
-for entry in r_json:
-    vcenter_hosts.append(entry["name"])
+#for entry in r_json:
+ #   vcenter_hosts.append(entry["name"])
 
 response = request(
     "GET",
