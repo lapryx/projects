@@ -37,6 +37,7 @@ current_session = session(
 
 #vcenter_hosts = []
 
+
 #for entry in r_json:
  #   vcenter_hosts.append(entry["name"])
 
