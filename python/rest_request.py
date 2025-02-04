@@ -1,32 +1,54 @@
 #!/home/loggenmm/.venv/dev/bin/python
 
 from requests import request
+from requests import session
 from requests.auth import HTTPBasicAuth
+from getpass import getpass
 import json
 import pandas
 
-csv = 'tmp.csv'
-username = 'loggenmm@vuw.leidenuniv.nl'
-apikey   = 'ATATT3xFfGF0hB7xzb7pEEA3DPrDQ9knwKSJTPXhykBMt3CmQrEQpboEAHcGmG6xymS8VPfWwvjLIQL0z_al6eNCdMdZrZGtlGamwEr0MGLnwGlt8EUCKKKZY7QD0-Hb6OakR2BBiMKsVe6lsv7bh3wEkujMYRwGW03-OyEj8-P0kp9_M0LP4EM=2489715D'
-url      = 'https://universiteitleiden.atlassian.net'
-apiPath  = '/wiki/rest/api/content/2295889921?expand=body.storage'
-auth = HTTPBasicAuth(username, apikey)
+hosts = open("hosts.txt","r")
+
+hosts_data = hosts.read()
+
+hosts_list = hosts_data.split("\n")
+
+
+username = 'adminloggen@vuw.leidenuniv.nl'
+url      = 'https://vcenter-wld01.luci.leidenuniv.nl/api/'
+#auth = HTTPBasicAuth(username, getpass())
 
 
 headers = {
-        "Accept": "application/json"
 }
 
-response = request(
-    "GET",
-    url+apiPath,
-    headers=headers,
-    auth=auth
+current_session = session(
 )
-response_json = json.loads(response.text)
-#print(response.text)
-tables = pandas.read_html(response_json["body"]["storage"]["value"])
-tables[0].to_csv(csv)
 
-#print(json.dumps(response_json["body"]["storage"]["value"], sort_keys=True, indent=4, separators=(",", ": ")))
-#print(json.dumps(response.text))
+current_session.auth=(username, getpass())
+
+sessionID = current_session.post(url+"session")
+
+
+headers = {
+        "vmware-api-session-id": json.loads(sessionID.text)
+        }
+
+current_session.headers.update(headers)
+
+response = current_session.get(url+"vcenter/vm")
+
+r_json = json.loads(response.text)
+
+vcenter_hosts = []
+
+for entry in r_json:
+    vcenter_hosts.append(entry["name"])
+
+print(list(filter(lambda a: a not in vcenter_hosts,hosts_list )))
+#response = request(
+#    "GET",
+#    url+"vcenter/vm/t-luci-020341",
+#    headers=headers,
+#    auth=
+#        )
